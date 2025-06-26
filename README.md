@@ -1,5 +1,11 @@
 # React UI for the User Search App
 
+## Overview
+
+The application fetches users for the below API and display the same in a nice UI -
+
+https://jsonplaceholder.typicode.com
+
 ## Requirements
 
 Node 20 -- Node can be acquired using [Node Version Manager](https://github.com/nvm-sh/nvm)
