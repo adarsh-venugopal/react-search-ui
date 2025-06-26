@@ -3,26 +3,20 @@ import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import WidgetDisplay from '../WidgetDisplay'
-import WidgetForm from '../WidgetForm'
 import {
-  fetchAllWidgets,
-  fetchWidgetByName,
-  deleteWidget,
-  createWidget,
-  updateWidget
+  fetchAllUsers,
+  fetchUsersByName
 } from '../../lib/apiConnect'
 
 const WidgetList = () => {
   const [widgets, setWidgets] = useState([])
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [formOpen, setFormOpen] = useState(false);
-  const [formErrors, setFormErrors] = useState([]);
-  const [editTarget, setEditTarget] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResult, setSearchResult] = useState(null);
+  const [searchResult, setSearchResult] = useState([]);
   const [searchError, setSearchError] = useState(null);
 
 
@@ -32,62 +26,30 @@ const WidgetList = () => {
 
   const refreshWidgets = () => {
     setLoading(true);
-    fetchAllWidgets()
+    fetchAllUsers()
       .then(data => {
         setWidgets(data);
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Error fetching widgets', error);
+        console.error('Error fetching users', error);
         setError(error);
         setLoading(false);
       });
   }
-
-  const handleCreate = () => {
-    setEditTarget(null);
-    setFormOpen(true);
-  };
-
-  const handleEdit = (widget) => {
-    setEditTarget(widget);
-    setFormOpen(true);
-  };
-
-  const handleDelete = (name) => {
-    deleteWidget(name).then(refreshWidgets);
-  };
-
-  const handleFormSubmit = (data) => {
-    const action = editTarget ? updateWidget(data.name, data) : createWidget(data);
-    action
-    .then(() => {
-      setFormOpen(false);
-      setFormErrors([]);
-      refreshWidgets();
-    })
-    .catch(async (err) => {
-      // Try to extract validation messages
-      if (err.response?.status === 400 && Array.isArray(err.response.data)) {
-        setFormErrors(err.response.data);
-      } else {
-        setFormErrors(["An unexpected error occurred."]);
-      }
-    });
-  };
 
   const handleSearch = () => {
     if (!searchTerm.trim()) return;
 
     setLoading(true);
     setSearchError(null);
-    fetchWidgetByName(searchTerm)
+    fetchUsersByName(searchTerm)
       .then((widget) => {
         setSearchResult(widget);
         setLoading(false);
       })
-      .catch((err) => {
-        setSearchError(`Widget "${searchTerm}" not found.`);
+      .catch(() => {
+        setSearchError(`User "${searchTerm}" not found.`);
         setSearchResult(null);
         setLoading(false);
       });
@@ -100,15 +62,11 @@ const WidgetList = () => {
   };
 
 
-  if (loading) return <Typography>Loading widgets...</Typography>;
-  if (error) return <Typography color="error">Error loading widgets.</Typography>;
+  if (loading) return <CircularProgress>Loading...</CircularProgress>;
+  if (error) return <Typography color="error">Error loading users.</Typography>;
 
   return (
     <Stack spacing={4} sx={{ margin: 'auto', maxWidth: 900, paddingTop: '4em', width: '100%' }}>
-      <Button onClick={handleCreate} variant="contained" sx={{ alignSelf: 'center' }}>
-        + Add Widget
-      </Button>
-
       <Stack direction="row" spacing={2} justifyContent="center">
         <input
           type="text"
@@ -125,36 +83,23 @@ const WidgetList = () => {
         <Typography color="error" textAlign="center">{searchError}</Typography>
       )}
 
-      <WidgetForm
-        open={formOpen}
-        onClose={() => {
-          setFormOpen(false)
-          setFormErrors([])
-        }}
-        onSubmit={handleFormSubmit}
-        initialData={editTarget}
-        errors={formErrors}
-      />
-
       <Typography sx={{ textAlign: 'center' }} variant="h3">
-        List of widgets:
+        Users
       </Typography>
       <Grid container justifyContent="center" spacing={4} sx={{ paddingRight: 4, width: '100%' }}>
         {widgets.length === 0 ? (
-          <Typography>You have no available widgets. Please create some!</Typography>
+          <Typography>You have no available users. Please create some!</Typography>
         ) : (
           searchResult ? (
-            <WidgetDisplay
-              widget={searchResult}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
+            Object.values(searchResult).length > 0 ?
+              (searchResult.map((current) => <WidgetDisplay
+                key={current.id}
+                widget={current} />)) :
+              <Typography>No users match the provided search term</Typography>
           ) : (
-            widgets.map((current, index) => <WidgetDisplay
-              key={current.name}
-              widget={current}
-              onEdit={handleEdit}
-              onDelete={handleDelete} />)
+            widgets.map((current) => <WidgetDisplay
+              key={current.id}
+              widget={current} />)
           )
         )}
       </Grid>

@@ -10,9 +10,7 @@ As mentioned in the requirements, this project requires Node v20.19.2 which can 
 
 Follow the steps below -
 
-First, start the backend service by running ./gradlew bootRun.
-
-Then, do 
+Do 
 
 npm install 
 
@@ -26,18 +24,11 @@ npm install -g serve
 
 serve -s build 
 
-## Dashboard Screens
+## Screenshots
 
-![alt text](image.png)
+![alt text](image-5.png)
 
-![alt text](image-1.png)
+![alt text](image-6.png)
 
-![alt text](image-2.png)
-
-![alt text](image-3.png)
-
-![alt text](image-4.png)
-
-## Issues
-* I faced some issues with a test case (probably something to do with JS hoisting) which I was not able to resolve 
-* I have focussed on achieving the core functionality of CRUD operations for Widgets and not much on the styling. I have just followed the MUI theme that existed in the intial template.
+## Notes
+* I have focussed on achieving the core functionality of operations for Users and not much on the styling. I have just followed the MUI theme.
