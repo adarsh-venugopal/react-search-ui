@@ -1,4 +1,4 @@
-# React UI for the Widget App
+# React UI for the User Search App
 
 ## Requirements
 
